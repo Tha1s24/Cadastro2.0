@@ -5,7 +5,9 @@ const db = require('../db');
 // GET /api/users - listar todos
 router.get('/', async(req, res) => {
     try {
-        const [rows] = await db.query('SELECT id, nome, email, telefone FROM users');
+        const [rows] = await db.query(
+            'SELECT id, nome, email, telefone FROM users'
+        );
         res.json(rows);
     } catch (err) {
         console.error(err);
@@ -16,8 +18,14 @@ router.get('/', async(req, res) => {
 // GET /api/users/:id - obter por id
 router.get('/:id', async(req, res) => {
     try {
-        const [rows] = await db.query('SELECT id, nome, email, telefone FROM users WHERE id = ?', [req.params.id]);
-        if (rows.length === 0) return res.status(404).json({ error: 'Usuário não encontrado' });
+        const [rows] = await db.query(
+            'SELECT id, nome, email, telefone FROM users WHERE id = ?', [req.params.id]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
         res.json(rows[0]);
     } catch (err) {
         console.error(err);
@@ -25,38 +33,80 @@ router.get('/:id', async(req, res) => {
     }
 });
 
-// POST /api/users - criar -- Colocar API para limitar o nome em ate 50 caracteries.
+// POST /api/users - criar usuário (nome até 50 caracteres)
 router.post('/', async(req, res) => {
     const { nome, email, telefone } = req.body;
-    if (!nome || !email) return res.status(400).json({ error: 'nome e email são obrigatórios' });
+
+    // Validações
+    if (!nome || !email) {
+        return res.status(400).json({ error: 'nome e email são obrigatórios' });
+    }
+
+    if (nome.length > 50) {
+        return res.status(400).json({
+            error: 'O nome deve conter no máximo 50 caracteres'
+        });
+    }
+
     try {
-        const [result] = await db.query('INSERT INTO users (nome, email, telefone) VALUES (?, ?, ?)', [nome, email, telefone || null]);
-        const inserted = { id: result.insertId, nome, email, telefone };
-        res.status(201).json(inserted);
+        const [result] = await db.query(
+            'INSERT INTO users (nome, email, telefone) VALUES (?, ?, ?)', [nome, email, telefone || null]
+        );
+
+        res.status(201).json({
+            id: result.insertId,
+            nome,
+            email,
+            telefone
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Erro ao criar usuário' });
     }
 });
 
-// PUT /api/users/:id - atualizar
+// PUT /api/users/:id - atualizar usuário (nome até 50 caracteres)
 router.put('/:id', async(req, res) => {
     const { nome, email, telefone } = req.body;
+
+    if (nome && nome.length > 50) {
+        return res.status(400).json({
+            error: 'O nome deve conter no máximo 50 caracteres'
+        });
+    }
+
     try {
-        const [result] = await db.query('UPDATE users SET nome = ?, email = ?, telefone = ? WHERE id = ?', [nome, email, telefone, req.params.id]);
-        if (result.affectedRows === 0) return res.status(404).json({ error: 'Usuário não encontrado' });
-        res.json({ id: Number(req.params.id), nome, email, telefone });
+        const [result] = await db.query(
+            'UPDATE users SET nome = ?, email = ?, telefone = ? WHERE id = ?', [nome, email, telefone, req.params.id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        res.json({
+            id: Number(req.params.id),
+            nome,
+            email,
+            telefone
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Erro ao atualizar usuário' });
     }
 });
 
-// DELETE /api/users/:id - remover
+// DELETE /api/users/:id - remover usuário
 router.delete('/:id', async(req, res) => {
     try {
-        const [result] = await db.query('DELETE FROM users WHERE id = ?', [req.params.id]);
-        if (result.affectedRows === 0) return res.status(404).json({ error: 'Usuário não encontrado' });
+        const [result] = await db.query(
+            'DELETE FROM users WHERE id = ?', [req.params.id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
         res.json({ success: true });
     } catch (err) {
         console.error(err);
