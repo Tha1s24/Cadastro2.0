@@ -1,8 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
+const bcrypt = require('bcryptjs'); // npm install bcryptjs
 
-// GET /api/users - listar todos
+const SALT_ROUNDS = 10;
+
+/* =========================
+   LISTAR TODOS USUÁRIOS (sem senha)
+========================= */
 router.get('/', async(req, res) => {
     try {
         const [rows] = await db.query(
@@ -15,7 +20,9 @@ router.get('/', async(req, res) => {
     }
 });
 
-// GET /api/users/:id - obter por id
+/* =========================
+   OBTER USUÁRIO POR ID (sem senha)
+========================= */
 router.get('/:id', async(req, res) => {
     try {
         const [rows] = await db.query(
@@ -33,24 +40,27 @@ router.get('/:id', async(req, res) => {
     }
 });
 
-// POST /api/users - criar usuário (nome até 50 caracteres)
+/* =========================
+   CRIAR USUÁRIO
+========================= */
 router.post('/', async(req, res) => {
-    const { nome, email, telefone } = req.body;
+    const { nome, email, telefone, senha } = req.body;
 
     // Validações
-    if (!nome || !email) {
-        return res.status(400).json({ error: 'nome e email são obrigatórios' });
+    if (!nome || !email || !senha) {
+        return res.status(400).json({ error: 'nome, email e senha são obrigatórios' });
     }
 
     if (nome.length > 50) {
-        return res.status(400).json({
-            error: 'O nome deve conter no máximo 50 caracteres'
-        });
+        return res.status(400).json({ error: 'O nome deve conter no máximo 50 caracteres' });
     }
 
     try {
+        // Hash da senha
+        const hashedPassword = await bcrypt.hash(senha, SALT_ROUNDS);
+
         const [result] = await db.query(
-            'INSERT INTO users (nome, email, telefone) VALUES (?, ?, ?)', [nome, email, telefone || null]
+            'INSERT INTO users (nome, email, telefone, senha) VALUES (?, ?, ?, ?)', [nome, email, telefone || null, hashedPassword]
         );
 
         res.status(201).json({
@@ -65,43 +75,54 @@ router.post('/', async(req, res) => {
     }
 });
 
-// PUT /api/users/:id - atualizar usuário (nome até 50 caracteres)
+/* =========================
+   ATUALIZAR USUÁRIO
+========================= */
 router.put('/:id', async(req, res) => {
-    const { nome, email, telefone } = req.body;
+    const { nome, email, telefone, senha } = req.body;
 
     if (nome && nome.length > 50) {
-        return res.status(400).json({
-            error: 'O nome deve conter no máximo 50 caracteres'
-        });
+        return res.status(400).json({ error: 'O nome deve conter no máximo 50 caracteres' });
     }
 
     try {
-        const [result] = await db.query(
-            'UPDATE users SET nome = ?, email = ?, telefone = ? WHERE id = ?', [nome, email, telefone, req.params.id]
-        );
+        // Se senha foi enviada, hash
+        let hashedPassword = undefined;
+        if (senha) {
+            hashedPassword = await bcrypt.hash(senha, SALT_ROUNDS);
+        }
+
+        // Monta query dinamicamente
+        const query = `
+            UPDATE users SET
+                nome = ?,
+                email = ?,
+                telefone = ?${hashedPassword ? ', senha = ?' : ''}
+            WHERE id = ?
+        `;
+        const params = hashedPassword ?
+            [nome, email, telefone || null, hashedPassword, req.params.id] :
+            [nome, email, telefone || null, req.params.id];
+
+        const [result] = await db.query(query, params);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: 'Usuário não encontrado' });
         }
 
-        res.json({
-            id: Number(req.params.id),
-            nome,
-            email,
-            telefone
-        });
+        res.json({ id: Number(req.params.id), nome, email, telefone });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Erro ao atualizar usuário' });
     }
 });
 
-// DELETE /api/users/:id - remover usuário
+/* =========================
+   REMOVER USUÁRIO
+========================= */
 router.delete('/:id', async(req, res) => {
     try {
-        const [result] = await db.query(
-            'DELETE FROM users WHERE id = ?', [req.params.id]
-        );
+        const [result] = await db.query('DELETE FROM users WHERE id = ?', [req.params.id]);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: 'Usuário não encontrado' });

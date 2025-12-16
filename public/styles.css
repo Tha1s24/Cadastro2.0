@@ -1,10 +1,157 @@
-body{font-family:Arial,Helvetica,sans-serif;background:#f4f6f8;color:#333}
-.container{max-width:760px;margin:40px auto;padding:20px;background:#fff;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.06)}
-h1,h2{color:#222}
-form{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;margin-bottom:20px}
-form label{grid-column:span 2;font-weight:600}
-form input{padding:8px;border:1px solid #ccd; border-radius:4px}
-form button{grid-column:span 2;padding:10px;background:#0078d7;color:#fff;border:none;border-radius:6px;cursor:pointer}
-table{width:100%;border-collapse:collapse}
-th,td{padding:8px;border-bottom:1px solid #e6eef6;text-align:left}
-button.action{margin-right:6px;padding:6px 8px;border-radius:4px;border:1px solid #ccc;background:#fff;cursor:pointer}
+/* Reset básico */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* Corpo da página */
+
+body {
+    min-height: 100vh;
+    background: #f4f6f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* Container principal */
+
+.container {
+    background: #ffffff;
+    width: 100%;
+    max-width: 420px;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Títulos */
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+h2 {
+    margin-top: 30px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+
+/* Formulário */
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* Labels */
+
+label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+
+/* Inputs */
+
+input {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+input:focus {
+    outline: none;
+    border-color: #4f46e5;
+}
+
+
+/* Botão */
+
+button {
+    padding: 12px;
+    background: #4f46e5;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #4338ca;
+}
+
+
+/* Links abaixo do formulário */
+
+.login-link,
+.register-link {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.login-link a,
+.register-link a {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.login-link a:hover,
+.register-link a:hover {
+    text-decoration: underline;
+}
+
+
+/* Tabela (página de cadastro) */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+table thead {
+    background: #4f46e5;
+    color: #fff;
+}
+
+table th,
+table td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+table tbody tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+
+/* Responsividade */
+
+@media (max-width: 480px) {
+    .container {
+        padding: 20px;
+    }
+    h1 {
+        font-size: 22px;
+    }
+}

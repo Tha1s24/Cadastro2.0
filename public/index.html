@@ -1,35 +1,57 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Cadastro - Exemplo</title>
     <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
+</head>
+
+<body>
     <div class="container">
-      <h1>Cadastro de Alunos</h1>
+        <h1>Cadastro de Alunos</h1>
 
-      <form id="formCadastro">
-        <label>Nome</label>
-        <input type="text" id="nome" required />
+        <form id="formCadastro">
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" required />
 
-        <label>Email</label>
-        <input type="email" id="email" required />
+            <label for="email">Email</label>
+            <input type="email" id="email" required />
 
-        <label>Telefone</label>
-        <input type="text" id="telefone" />
+            <label for="telefone">Telefone</label>
+            <input type="text" id="telefone" />
 
-        <button type="submit">Salvar</button>
-      </form>
+            <label for="senha">Senha</label>
+            <input type="password" id="senha" required />
 
-      <h2>Lista de Alunos</h2>
-      <table id="usersTable">
-        <thead><tr><th>ID</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Ações</th></tr></thead>
-        <tbody></tbody>
-      </table>
+            <label for="confirmarSenha">Confirmar Senha</label>
+            <input type="password" id="confirmarSenha" required />
+
+            <button type="submit">Salvar</button>
+        </form>
+
+        <p class="login-link">
+            Já tem uma conta?
+            <a href="login.html">Faça login</a>
+        </p>
+
+        <h2>Lista de Alunos</h2>
+        <table id="usersTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Telefone</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
 
     <script src="script.js"></script>
-  </body>
+</body>
+
 </html>
